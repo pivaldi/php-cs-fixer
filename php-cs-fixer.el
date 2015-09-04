@@ -29,7 +29,7 @@
   :group 'php-cs-fixer)
 
 (defcustom php-cs-fixer-fixers-options
-  '("align_double_arrow" "align_equals" "multiline_spaces_before_semicolon" "concat_with_spaces")
+  '("multiline_spaces_before_semicolon" "concat_with_spaces")
   "The 'php-cs-fixer' --fixers option value. See http://cs.sensiolabs.org/"
   :type '(repeat string)
   :group 'php-cs-fixer)
