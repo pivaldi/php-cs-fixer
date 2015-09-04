@@ -153,17 +153,12 @@ buffer."
             (if (zerop (call-process-region (point-min) (point-max) "diff" nil patchbuf nil "-n" "-" tmpfile))
                 (message "Buffer is already php-cs-fixed")
               (php-cs-fixer--apply-rcs-patch patchbuf)
-              (message "Applied php-cs-fixer"))
-            (if errbuf (php-cs-fixer--kill-error-buffer errbuf)))
-        (warn (with-current-buffer errbuf (buffer-string)))
-        (if errbuf (with-current-buffer errbuf
-                     (progn
-                       (message "%s" (buffer-string))
-                       (php-cs-fixer--kill-error-buffer errbuf))))
+              (message "Applied php-cs-fixer")))
+        (warn (with-current-buffer errbuf (buffer-string)))))
 
-        (kill-buffer patchbuf)
-        (delete-file tmpfile)))))
-
+    (php-cs-fixer--kill-error-buffer errbuf)
+    (kill-buffer patchbuf)
+    (delete-file tmpfile)))
 
 (defvar php-cs-fixer-command-not-found-msg "Package php-cs-fixer loaded but command line php-cs-fixer not found.
 Fix this issue removing the Emacs package php-cs-fixer or installing the program php-cs-fixer")
