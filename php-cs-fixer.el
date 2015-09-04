@@ -122,7 +122,7 @@ buffer."
   (interactive)
   (let ((tmpfile (make-temp-file "PHP-CS-Fixer" nil ".php"))
         (patchbuf (get-buffer-create "*PHP-CS-Fixer patch*"))
-        (errbuf (if gofmt-show-errors (get-buffer-create "*PHP-CS-Fixer Errors*")))
+        (errbuf (get-buffer-create "*PHP-CS-Fixer Errors*"))
         (coding-system-for-read 'utf-8)
         (coding-system-for-write 'utf-8))
 
@@ -138,7 +138,7 @@ buffer."
       (write-region nil nil tmpfile)
 
       ;; We're using errbuf for the mixed stdout and stderr output. This
-      ;; is not an issue because gofmt -w does not produce any stdout
+      ;; is not an issue because  php-cs-fixer -q does not produce any stdout
       ;; output in case of success.
       (if (zerop (call-process "php" nil errbuf nil "-l" tmpfile))
           (progn
