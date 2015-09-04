@@ -155,7 +155,7 @@ buffer."
               (php-cs-fixer--apply-rcs-patch patchbuf)
               (message "Applied php-cs-fixer"))
             (if errbuf (php-cs-fixer--kill-error-buffer errbuf)))
-        (message "Invalid PHP code, could not apply php-cs-fixer")
+        (warn (with-current-buffer errbuf (buffer-string)))
         (if errbuf (with-current-buffer errbuf
                      (progn
                        (message "%s" (buffer-string))
