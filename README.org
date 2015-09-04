@@ -1,12 +1,12 @@
 This is a php-cs-fixer wrapper for the Emacs editor.
 
 * Features
-Allow in the /Emacs/ editor to fixes most issues in /PHP/ code when
+Allows in the /Emacs/ editor to fix most issues in /PHP/ code when
 you want to follow the coding standards PSR-1 and PSR-2.
 
 Under the hood, this package provides the customisable /Elisp/ command
 /php-cs-fix/ wich wraps the command line /php-cs-fixer/ provided by
-powerful [[http://cs.sensiolabs.org/][PHP Coding Standards Fixer]]
+the powerful [[http://cs.sensiolabs.org/][PHP Coding Standards Fixer]]
 
 * Installation
 ** System part
@@ -15,7 +15,7 @@ executable in your system.
 
 ** Emacs part
 To install php-cs-fixer.el for Emacs, place `php-cs-fixer.el` in a
-directory of your choice, add it to yourload path and require
+directory of your choice, add it to your load path and require
 `'php-cs-fixer` writing this code in your emacs configuration file
 (aka .emacs) :
 
@@ -24,20 +24,19 @@ directory of your choice, add it to yourload path and require
     (require 'php-cs-fixer)
 #+END_SRC
 
-Either evaluate both statements with `C-x C-e`, or restart Emacs.
+Either evaluate both statements with /`C-x C-e`/, or restart /Emacs/.
 
 * Usage
-Try `M-x php-cs-fix [ret]` when editing a /PHP/ file.
+Try /`M-x php-cs-fix [ret]`/ when editing a /PHP/ file.
 
-If you want an automatic fix when saving all php files, place in your configuration file the line :
+If you want an automatic fix when saving all php files, place this code in your /Emacs/ configuration file the line :
 #+BEGIN_SRC elisp
 (add-hook 'before-save-hook 'php-cs-fixer-before-save)
 #+END_SRC
 
-
 * Customisable variable
-- `php-cs-fixer-command` : the 'php-cs-fixer' command (default is "php-cs-fixer") ;
-- `php-cs-fixer-level-option` : the 'php-cs-fixer' --level option value (default is "symfony") ;
-- `php-cs-fixer-fixers-options` : the 'php-cs-fixer' --fixers option value (default is '("align_double_arrow" "align_equals" "multiline_spaces_before_semicolon" "concat_with_spaces")) ;
+- /`php-cs-fixer-command`/ : the 'php-cs-fixer' command (default is "php-cs-fixer") ;
+- /`php-cs-fixer-level-option`/ : the 'php-cs-fixer' --level option value (default is "symfony") ;
+- /`php-cs-fixer-fixers-options`/ : the 'php-cs-fixer' --fixers option value (default is '("align_double_arrow" "align_equals" "multiline_spaces_before_semicolon" "concat_with_spaces")) ;
 
-Try `M-x customize-group [ret] php-cs-fixer [ret]` to modify the values of these variables.
+Try /`M-x customize-group [ret] php-cs-fixer [ret]`/ to modify the values of these variables.
