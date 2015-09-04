@@ -164,13 +164,22 @@ buffer."
         (kill-buffer patchbuf)
         (delete-file tmpfile)))))
 
+
+(defvar php-cs-fixer-command-not-found-msg "Package php-cs-fixer loaded but command line php-cs-fixer not found.
+Fix this issue removing the Emacs package php-cs-fixer or installing the program php-cs-fixer")
+
 ;;;###autoload
 (defun php-cs-fixer-before-save ()
   "Add this to .emacs to run php-cs-fix on the current buffer when saving:
  (add-hook 'before-save-hook 'php-cs-fixer-before-save)."
 
   (interactive)
-  (when (and buffer-file-name (string= (file-name-extension buffer-file-name) "php")) (php-cs-fix)))
+  (if (executable-find "php-cs-fixer")
+      (when (and buffer-file-name (string= (file-name-extension buffer-file-name) "php")) (php-cs-fix))
+    (warn php-cs-fixer-command-not-found-msg)))
+
+(if (not (executable-find "php-cs-fixer"))
+    (warn php-cs-fixer-command-not-found-msg))
 
 (provide 'php-cs-fixer)
 
