@@ -173,7 +173,7 @@ Fix this issue removing the Emacs package php-cs-fixer or installing the program
       (when (and
              buffer-file-name
              (string= (file-name-extension buffer-file-name) "php")
-             (not (string-match "/geben/" (file-name-directory buffer-file-name)))
+             (or (not (boundp 'geben-temporary-file-directory)) (not (string-match geben-temporary-file-directory (file-name-directory buffer-file-name))))
              ) (php-cs-fix))
     (warn php-cs-fixer-command-not-found-msg)))
 
