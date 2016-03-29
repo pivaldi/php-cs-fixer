@@ -170,7 +170,11 @@ Fix this issue removing the Emacs package php-cs-fixer or installing the program
 
   (interactive)
   (if (executable-find "php-cs-fixer")
-      (when (and buffer-file-name (string= (file-name-extension buffer-file-name) "php")) (php-cs-fix))
+      (when (and
+             buffer-file-name
+             (string= (file-name-extension buffer-file-name) "php")
+             (not (string-match "/geben/" (file-name-directory buffer-file-name)))
+             ) (php-cs-fix))
     (warn php-cs-fixer-command-not-found-msg)))
 
 (if (not (executable-find "php-cs-fixer"))
