@@ -14,6 +14,8 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
+
 (defcustom php-cs-fixer-command "php-cs-fixer"
   "The 'php-cs-fixer' command. See http://cs.sensiolabs.org/ for options"
   :type 'string
