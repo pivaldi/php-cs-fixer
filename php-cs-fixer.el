@@ -144,14 +144,15 @@ buffer."
       ;; output in case of success.
       (if (zerop (call-process "php" nil errbuf nil "-l" tmpfile))
           (progn
-            (call-process php-cs-fixer-command
+            (unless (zerop (call-process php-cs-fixer-command
                           nil errbuf nil
                           "fix"
                           (if php-cs-fixer-level-option (concat "--level=" php-cs-fixer-level-option) "")
                           (concat "--fixers=-psr0" ;; Because tmpfile can not support this constraint
                                   (if php-cs-fixer-fixers-options (concat "," (mapconcat 'identity php-cs-fixer-fixers-options ",")) ""))
                           "--quiet"
-                          tmpfile)
+                          tmpfile))
+              (warn (with-current-buffer errbuf (buffer-string))))
             (if (zerop (call-process-region (point-min) (point-max) "diff" nil patchbuf nil "-n" "-" tmpfile))
                 (message "Buffer is already php-cs-fixed")
               (php-cs-fixer--apply-rcs-patch patchbuf)
