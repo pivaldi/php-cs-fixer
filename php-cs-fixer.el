@@ -18,6 +18,8 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
+
 (defcustom php-cs-fixer-command "php-cs-fixer"
   "The 'php-cs-fixer' command. See <http://cs.sensiolabs.org/> for options."
   :type 'string
@@ -206,7 +208,11 @@ Add this to .emacs to run php-cs-fix on the current buffer when saving:
 
   (interactive)
   (if (executable-find "php-cs-fixer")
-      (when (and buffer-file-name (string= (file-name-extension buffer-file-name) "php")) (php-cs-fix))
+      (when (and
+             buffer-file-name
+             (string= (file-name-extension buffer-file-name) "php")
+             (or (not (boundp 'geben-temporary-file-directory)) (not (string-match geben-temporary-file-directory (file-name-directory buffer-file-name))))
+             ) (php-cs-fix))
     (warn php-cs-fixer-command-not-found-msg)))
 
 (if (not (executable-find "php-cs-fixer"))
