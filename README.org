@@ -1,12 +1,12 @@
-This is a php-cs-fixer wrapper for the Emacs editor.
+A php-cs-fixer wrapper for the Emacs editor.
 
 * Features
 Allows in the /Emacs/ editor to fix most issues in /PHP/ code when
 you want to follow the coding standards PSR-1 and PSR-2.
 
 Under the hood, this package provides the customisable /Elisp/ command
-/php-cs-fix/ wich wraps the command line /php-cs-fixer/ provided by
-the powerful [[http://cs.sensiolabs.org/][PHP Coding Standards Fixer]]
+/php-cs-fix/ wich wraps the command line /php-cs-fixer/ *version >=2.0*
+provided by the powerful [[http://cs.sensiolabs.org/][PHP Coding Standards Fixer]]
 
 * Installation
 ** System part
@@ -36,7 +36,8 @@ If you want an automatic fix when saving all php files, place this code in your 
 
 * Customisable variable
 - /`php-cs-fixer-command`/ : the 'php-cs-fixer' command (default is "php-cs-fixer") ;
-- /`php-cs-fixer-level-option`/ : the 'php-cs-fixer' --level option value (default is "symfony") ;
-- /`php-cs-fixer-fixers-options`/ : the 'php-cs-fixer' --fixers option value (default is '("align_double_arrow" "align_equals" "multiline_spaces_before_semicolon" "concat_with_spaces")) ;
+- /`php-cs-config-option`/ : the 'php-cs-fixer' --config option value (default is nil) ;
+- /`php-cs-rules-level-part-options`/ : the 'php-cs-fixer' --rules base part options value (default is '("@Symfony")) ;
+- /`php-cs-rules-fixer-part-options`/ : the 'php-cs-fixer' --rules exact rules part options value (default is '("no_multiline_whitespace_before_semicolons" "concat_space")) ;
 
 Try /`M-x customize-group [ret] php-cs-fixer [ret]`/ to modify the values of these variables.

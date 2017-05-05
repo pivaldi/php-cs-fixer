@@ -1,36 +1,53 @@
-;;; php-cs-fixer.el ---
+;;; Package --- Summary
+;; This is a php-cs-fixer <https://github.com/FriendsOfPHP/PHP-CS-Fixer> wrapper for the Emacs editor.
 
+;;; License:
 ;; Copyright 2015 OVYA (Renée Costes Viager Group). All rights reserved.
 ;; Use of this source code is governed by a BSD-style
 ;; license that can be found in the LICENSE file.
 
-;; Author: Philippe Ivaldi for OVYA
+;;; Author: Philippe Ivaldi for OVYA
 ;; Source: Some pieces of code are copied from go-mode.el https://github.com/dominikh/go-mode.el
 ;; Version: 1.0.0
 ;; Keywords: languages php
 ;; URL: …
 ;;
+;;; Commentary:
 ;; This file is not part of GNU Emacs.
+;; See the file README.org for further information.
 
 ;;; Code:
 
 (defcustom php-cs-fixer-command "php-cs-fixer"
-  "The 'php-cs-fixer' command. See http://cs.sensiolabs.org/ for options"
+  "The 'php-cs-fixer' command. See <http://cs.sensiolabs.org/> for options."
   :type 'string
   :group 'php-cs-fixer)
 
-(defcustom php-cs-fixer-level-option "symfony"
-  "The 'php-cs-fixer' --level option value. See http://cs.sensiolabs.org/ for options"
-  :type '(choice (const :tag "Not set" :value nil)
-                 (const :value "psr0")
-                 (const :value "psr1")
-                 (const :value "psr2")
-                 (const :value "symfony"))
+(defcustom php-cs-config-option nil
+  "The 'php-cs-fixer' config option. See <http://cs.sensiolabs.org/>
+If not nil `php-cs-rules-level-part-options` and `php-cs-rules-fixer-part-options`
+are not used."
+  :type 'string
   :group 'php-cs-fixer)
 
-(defcustom php-cs-fixer-fixers-options
-  '("multiline_spaces_before_semicolon" "concat_with_spaces")
-  "The 'php-cs-fixer' --fixers option value. See http://cs.sensiolabs.org/"
+(defcustom php-cs-rules-level-part-options '("@Symfony")
+  "The 'php-cs-fixer' --rules base part options. See <http://cs.sensiolabs.org/> for options."
+  :type '(repeat
+          (choice
+           ;; (const :tag "Not set" :value nil)
+           (const :value "@PSR0")
+           (const :value "@PSR1")
+           (const :value "@PSR2")
+           (const :value "@Symfony")
+           (const :value "@Symfony::risky")
+           (const :value "@PHP70Migration:risky")
+           ))
+  :group 'php-cs-fixer)
+
+(defcustom php-cs-rules-fixer-part-options
+  '("no_multiline_whitespace_before_semicolons" "concat_space")
+  "The 'php-cs-fixer' --rules part options that is not part of `php-cs-rules-level-part-options`.
+See <http://cs.sensiolabs.org/>."
   :type '(repeat string)
   :group 'php-cs-fixer)
 
@@ -41,9 +58,9 @@
 
 ;; Copy of go--delete-whole-line from https://github.com/dominikh/go-mode.el
 (defun php-cs-fixer--delete-whole-line (&optional arg)
-  "Delete the current line without putting it in the kill-ring."
-  ;; Derived from `kill-whole-line'.
-  ;; ARG is defined as for that function.
+  "Delete the current line without putting it in the `kill-ring`.
+Derived from the function `kill-whole-line'.
+ARG is defined as for that function."
   (setq arg (or arg 1))
   (if (and (> arg 0)
            (eobp)
@@ -116,6 +133,23 @@ buffer."
         (quit-window t win)
       (kill-buffer errbuf))))
 
+(defun php-cs-fixer-build-rules-options ()
+  "Private method to build the --rules options."
+  (if php-cs-config-option ""
+    (let ((base-opts
+           (concat
+            (if php-cs-rules-level-part-options
+                (concat (mapconcat 'identity php-cs-rules-level-part-options ",") ",")
+              nil)
+            "-psr0" ;; Because tmpfile can not support this constraint
+            ))
+          (other-opts (if php-cs-rules-fixer-part-options (concat "," (mapconcat 'identity php-cs-rules-fixer-part-options ",")) nil)))
+
+      (concat
+       "--rules=" base-opts
+       (if other-opts other-opts "")))
+    ))
+
 ;;;###autoload
 (defun php-cs-fix ()
   "Formats the current PHP buffer according to the PHP-CS-Fixer tool."
@@ -145,9 +179,10 @@ buffer."
             (call-process php-cs-fixer-command
                           nil errbuf nil
                           "fix"
-                          (if php-cs-fixer-level-option (concat "--level=" php-cs-fixer-level-option) "")
-                          (concat "--fixers=-psr0" ;; Because tmpfile can not support this constraint
-                                  (if php-cs-fixer-fixers-options (concat "," (mapconcat 'identity php-cs-fixer-fixers-options ",")) ""))
+                          (php-cs-fixer-build-rules-options)
+                          (if php-cs-config-option
+                              (concat "--config=" (shell-quote-argument php-cs-config-option)) "")
+                          "--using-cache=no"
                           "--quiet"
                           tmpfile)
             (if (zerop (call-process-region (point-min) (point-max) "diff" nil patchbuf nil "-n" "-" tmpfile))
@@ -165,7 +200,8 @@ Fix this issue removing the Emacs package php-cs-fixer or installing the program
 
 ;;;###autoload
 (defun php-cs-fixer-before-save ()
-  "Add this to .emacs to run php-cs-fix on the current buffer when saving:
+  "Used to automatically fix the file saving the buffer.
+Add this to .emacs to run php-cs-fix on the current buffer when saving:
  (add-hook 'before-save-hook 'php-cs-fixer-before-save)."
 
   (interactive)
