@@ -1,5 +1,4 @@
-;;; Package --- Summary
-;; This is a php-cs-fixer <https://github.com/FriendsOfPHP/PHP-CS-Fixer> wrapper for the Emacs editor.
+;;; php-cs-fixer.el --- php-cs-fixer <https://github.com/FriendsOfPHP/PHP-CS-Fixer> wrapper for the Emacs editor.
 
 ;;; License:
 ;; Copyright 2015 OVYA (Renée Costes Viager Group). All rights reserved.
@@ -8,9 +7,9 @@
 
 ;;; Author: Philippe Ivaldi for OVYA
 ;; Source: Some pieces of code are copied from go-mode.el https://github.com/dominikh/go-mode.el
-;; Version: 1.0.0
+;; Version: 1.0Beta1
 ;; Keywords: languages php
-;; URL: …
+;; URL: https://github.com/OVYA/php-cs-fixer
 ;;
 ;;; Commentary:
 ;; This file is not part of GNU Emacs.
@@ -21,19 +20,19 @@
 (eval-when-compile (require 'cl))
 
 (defcustom php-cs-fixer-command "php-cs-fixer"
-  "The 'php-cs-fixer' command. See <http://cs.sensiolabs.org/> for options."
+  "The 'php-cs-fixer' command."
   :type 'string
   :group 'php-cs-fixer)
 
 (defcustom php-cs-config-option nil
-  "The 'php-cs-fixer' config option. See <http://cs.sensiolabs.org/>
-If not nil `php-cs-rules-level-part-options` and `php-cs-rules-fixer-part-options`
-are not used."
+  "The 'php-cs-fixer' config option.
+If not nil `php-cs-rules-level-part-options`
+and `php-cs-rules-fixer-part-options` are not used."
   :type 'string
   :group 'php-cs-fixer)
 
 (defcustom php-cs-rules-level-part-options '("@Symfony")
-  "The 'php-cs-fixer' --rules base part options. See <http://cs.sensiolabs.org/> for options."
+  "The 'php-cs-fixer' --rules base part options."
   :type '(repeat
           (choice
            ;; (const :tag "Not set" :value nil)
@@ -48,13 +47,14 @@ are not used."
 
 (defcustom php-cs-rules-fixer-part-options
   '("no_multiline_whitespace_before_semicolons" "concat_space")
-  "The 'php-cs-fixer' --rules part options that is not part of `php-cs-rules-level-part-options`.
-See <http://cs.sensiolabs.org/>."
+  "The 'php-cs-fixer' --rules part options.
+These options are not part of `php-cs-rules-level-part-options`."
   :type '(repeat string)
   :group 'php-cs-fixer)
 
 ;; Copy of go--goto-line from https://github.com/dominikh/go-mode.el
 (defun php-cs-fixer--goto-line (line)
+  "Private goto line to LINE."
   (goto-char (point-min))
   (forward-line (1- line)))
 
@@ -87,8 +87,7 @@ ARG is defined as for that function."
 
 ;; Derivated of go--apply-rcs-patch from https://github.com/dominikh/go-mode.el
 (defun php-cs-fixer--apply-rcs-patch (patch-buffer)
-  "Apply an RCS-formatted diff from PATCH-BUFFER to the current
-buffer."
+  "Apply an RCS-formatted diff from PATCH-BUFFER to the current buffer."
   (let ((target-buffer (current-buffer))
         ;; Relative offset between buffer line numbers and line numbers
         ;; in patch.
@@ -106,7 +105,7 @@ buffer."
         (goto-char (point-min))
         (while (not (eobp))
           (unless (looking-at "^\\([ad]\\)\\([0-9]+\\) \\([0-9]+\\)")
-            (error "invalid rcs patch or internal error in php-cs-fixer--apply-rcs-patch"))
+            (error "Invalid rcs patch or internal error in php-cs-fixer--apply-rcs-patch"))
           (forward-line)
           (let ((action (match-string 1))
                 (from (string-to-number (match-string 2)))
@@ -127,9 +126,10 @@ buffer."
                 (incf line-offset len)
                 (php-cs-fixer--delete-whole-line len)))
              (t
-              (error "invalid rcs patch or internal error in php-cs-fixer--apply-rcs-patch")))))))))
+              (error "Invalid rcs patch or internal error in php-cs-fixer--apply-rcs-patch")))))))))
 
 (defun php-cs-fixer--kill-error-buffer (errbuf)
+  "Private function that kill the error buffer ERRBUF."
   (let ((win (get-buffer-window errbuf)))
     (if win
         (quit-window t win)
@@ -211,7 +211,8 @@ Add this to .emacs to run php-cs-fix on the current buffer when saving:
       (when (and
              buffer-file-name
              (string= (file-name-extension buffer-file-name) "php")
-             (or (not (boundp 'geben-temporary-file-directory)) (not (string-match geben-temporary-file-directory (file-name-directory buffer-file-name))))
+             (or (not (boundp 'geben-temporary-file-directory))
+                 (not (string-match geben-temporary-file-directory (file-name-directory buffer-file-name))))
              ) (php-cs-fix))
     (warn php-cs-fixer-command-not-found-msg)))
 
