@@ -34,14 +34,14 @@
   :type 'string
   :group 'php-cs-fixer)
 
-(defcustom php-cs-config-option nil
+(defcustom php-cs-fixer-config-option nil
   "The 'php-cs-fixer' config option.
 If not nil `php-cs-rules-level-part-options`
 and `php-cs-rules-fixer-part-options` are not used."
   :type 'string
   :group 'php-cs-fixer)
 
-(defcustom php-cs-rules-level-part-options '("@Symfony")
+(defcustom php-cs-fixer-rules-level-part-options '("@Symfony")
   "The 'php-cs-fixer' --rules base part options."
   :type '(repeat
           (choice
@@ -55,10 +55,10 @@ and `php-cs-rules-fixer-part-options` are not used."
            ))
   :group 'php-cs-fixer)
 
-(defcustom php-cs-rules-fixer-part-options
+(defcustom php-cs-fixer-rules-fixer-part-options
   '("no_multiline_whitespace_before_semicolons" "concat_space")
   "The 'php-cs-fixer' --rules part options.
-These options are not part of `php-cs-rules-level-part-options`."
+These options are not part of `php-cs-fixer-rules-level-part-options`."
   :type '(repeat string)
   :group 'php-cs-fixer)
 
@@ -126,15 +126,15 @@ ARG is defined as for that function."
 
 (defun php-cs-fixer--build-rules-options ()
   "Private method to build the --rules options."
-  (if php-cs-config-option ""
+  (if php-cs-fixer-config-option ""
     (let ((base-opts
            (concat
-            (if php-cs-rules-level-part-options
-                (concat (mapconcat 'identity php-cs-rules-level-part-options ",") ",")
+            (if php-cs-fixer-rules-level-part-options
+                (concat (mapconcat 'identity php-cs-fixer-rules-level-part-options ",") ",")
               nil)
             "-psr0" ;; Because tmpfile can not support this constraint
             ))
-          (other-opts (if php-cs-rules-fixer-part-options (concat "," (mapconcat 'identity php-cs-rules-fixer-part-options ",")) nil)))
+          (other-opts (if php-cs-fixer-rules-fixer-part-options (concat "," (mapconcat 'identity php-cs-fixer-rules-fixer-part-options ",")) nil)))
 
       (concat
        "--rules=" base-opts
@@ -203,8 +203,8 @@ for the next calls."
               (call-process php-cs-fixer-command
                             nil errbuf nil
                             "fix"
-                            (if php-cs-config-option
-                                (concat "--config=" (shell-quote-argument php-cs-config-option))
+                            (if php-cs-fixer-config-option
+                                (concat "--config=" (shell-quote-argument php-cs-fixer-config-option))
                               (php-cs-fixer--build-rules-options))
                             "--using-cache=no"
                             "--quiet"
