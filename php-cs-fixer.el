@@ -1,7 +1,7 @@
-;;; php-cs-fixer.el --- php-cs-fixer <https://github.com/FriendsOfPHP/PHP-CS-Fixer> wrapper for the Emacs editor.
+;;; php-cs-fixer.el --- php-cs-fixer wrapper.
 
 ;;; License:
-;; Copyright 2015 OVYA (Renée Costes Viager Group). All rights reserved.
+;; Copyright 2015 OVYA (Renée Costes Group). All rights reserved.
 ;; Use of this source code is governed by a BSD-style
 ;; license that can be found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 ;; Source: Some pieces of code are copied from go-mode.el https://github.com/dominikh/go-mode.el
 ;; Version: 1.0Beta1
 ;; Keywords: languages php
+;; Package-Requires: ((cl-lib "0.5"))
 ;; URL: https://github.com/OVYA/php-cs-fixer
 ;;
 ;;; Commentary:
@@ -17,7 +18,16 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl-lib))
+
+;;;###autoload
+(defgroup php-cs-fixer nil
+  "php-cs-fixer wrapper."
+  :tag "PHP"
+  :prefix "php-cs-fixer-"
+  :group 'languages
+  :link '(url-link :tag "Source code repository" "https://github.com/OVYA/php-cs-fixer")
+  :link '(url-link :tag "Executable dependency" "https://github.com/FriendsOfPHP/PHP-CS-Fixer"))
 
 (defcustom php-cs-fixer-command "php-cs-fixer"
   "The 'php-cs-fixer' command."
@@ -58,32 +68,11 @@ These options are not part of `php-cs-rules-level-part-options`."
   (goto-char (point-min))
   (forward-line (1- line)))
 
-;; Copy of go--delete-whole-line from https://github.com/dominikh/go-mode.el
 (defun php-cs-fixer--delete-whole-line (&optional arg)
   "Delete the current line without putting it in the `kill-ring`.
 Derived from the function `kill-whole-line'.
 ARG is defined as for that function."
-  (setq arg (or arg 1))
-  (if (and (> arg 0)
-           (eobp)
-           (save-excursion (forward-visible-line 0) (eobp)))
-      (signal 'end-of-buffer nil))
-  (if (and (< arg 0)
-           (bobp)
-           (save-excursion (end-of-visible-line) (bobp)))
-      (signal 'beginning-of-buffer nil))
-  (cond ((zerop arg)
-         (delete-region (progn (forward-visible-line 0) (point))
-                        (progn (end-of-visible-line) (point))))
-        ((< arg 0)
-         (delete-region (progn (end-of-visible-line) (point))
-                        (progn (forward-visible-line (1+ arg))
-                               (unless (bobp)
-                                 (backward-char))
-                               (point))))
-        (t
-         (delete-region (progn (forward-visible-line 0) (point))
-                        (progn (forward-visible-line arg) (point))))))
+  (let (kill-ring) (kill-whole-line arg)))
 
 ;; Derivated of go--apply-rcs-patch from https://github.com/dominikh/go-mode.el
 (defun php-cs-fixer--apply-rcs-patch (patch-buffer)
@@ -135,7 +124,7 @@ ARG is defined as for that function."
         (quit-window t win)
       (kill-buffer errbuf))))
 
-(defun php-cs-fixer-build-rules-options ()
+(defun php-cs-fixer--build-rules-options ()
   "Private method to build the --rules options."
   (if php-cs-config-option ""
     (let ((base-opts
@@ -152,53 +141,83 @@ ARG is defined as for that function."
        (if other-opts other-opts "")))
     ))
 
+(defvar php-cs-fixer-command-not-found-msg "Command php-cs-fixer not found.
+Fix this issue removing the Emacs package php-cs-fixer or installing the program php-cs-fixer")
+
+(defvar php-cs-fixer-command-bad-version-msg "Command php-cs-fixer version not supported.
+Fix this issue removing the Emacs package php-cs-fixer or updating the program php-cs-fixer to version 2.*")
+
+(defvar php-cs-fixer-is-command-ok-var nil)
+
+(defun php-cs-fixer--is-command-ok ()
+  "Private Method.
+Return t if the command `php-cs-fixer-command`
+is available and supported by this package,  return nil otherwise.
+The test is done at first call and the same result will returns
+for the next calls."
+  (if php-cs-fixer-is-command-ok-var
+      (= 1 php-cs-fixer-is-command-ok-var)
+    (progn
+      (message "Testing php-cs-fixer existence and version...")
+      (setq php-cs-fixer-is-command-ok-var 0)
+
+      (if (executable-find "php-cs-fixer")
+          (if (string-match ".+ 2.[0-9]+.*"
+                            (shell-command-to-string
+                             (concat php-cs-fixer-command " --version")))
+              (progn (setq php-cs-fixer-is-command-ok-var 1) t)
+            (progn
+              (warn php-cs-fixer-command-bad-version-msg)
+              nil))
+        (progn (warn php-cs-fixer-command-not-found-msg) nil)
+        ))))
+
 ;;;###autoload
-(defun php-cs-fix ()
+(defun php-cs-fixer-fix ()
   "Formats the current PHP buffer according to the PHP-CS-Fixer tool."
   (interactive)
-  (let ((tmpfile (make-temp-file "PHP-CS-Fixer" nil ".php"))
-        (patchbuf (get-buffer-create "*PHP-CS-Fixer patch*"))
-        (errbuf (get-buffer-create "*PHP-CS-Fixer Errors*"))
-        (coding-system-for-read 'utf-8)
-        (coding-system-for-write 'utf-8))
 
-    (save-restriction
-      (widen)
-      (if errbuf
-          (with-current-buffer errbuf
-            (setq buffer-read-only nil)
-            (erase-buffer)))
-      (with-current-buffer patchbuf
-        (erase-buffer))
+  (when (php-cs-fixer--is-command-ok)
+    (let ((tmpfile (make-temp-file "PHP-CS-Fixer" nil ".php"))
+          (patchbuf (get-buffer-create "*PHP-CS-Fixer patch*"))
+          (errbuf (get-buffer-create "*PHP-CS-Fixer Errors*"))
+          (coding-system-for-read 'utf-8)
+          (coding-system-for-write 'utf-8))
 
-      (write-region nil nil tmpfile)
+      (save-restriction
+        (widen)
+        (if errbuf
+            (with-current-buffer errbuf
+              (setq buffer-read-only nil)
+              (erase-buffer)))
+        (with-current-buffer patchbuf
+          (erase-buffer))
 
-      ;; We're using errbuf for the mixed stdout and stderr output. This
-      ;; is not an issue because  php-cs-fixer -q does not produce any stdout
-      ;; output in case of success.
-      (if (zerop (call-process "php" nil errbuf nil "-l" tmpfile))
-          (progn
-            (call-process php-cs-fixer-command
-                          nil errbuf nil
-                          "fix"
-                          (php-cs-fixer-build-rules-options)
-                          (if php-cs-config-option
-                              (concat "--config=" (shell-quote-argument php-cs-config-option)) "")
-                          "--using-cache=no"
-                          "--quiet"
-                          tmpfile)
-            (if (zerop (call-process-region (point-min) (point-max) "diff" nil patchbuf nil "-n" "-" tmpfile))
-                (message "Buffer is already php-cs-fixed")
-              (php-cs-fixer--apply-rcs-patch patchbuf)
-              (message "Applied php-cs-fixer")))
-        (warn (with-current-buffer errbuf (buffer-string)))))
+        (write-region nil nil tmpfile)
 
-    (php-cs-fixer--kill-error-buffer errbuf)
-    (kill-buffer patchbuf)
-    (delete-file tmpfile)))
+        ;; We're using errbuf for the mixed stdout and stderr output. This
+        ;; is not an issue because  php-cs-fixer -q does not produce any stdout
+        ;; output in case of success.
+        (if (zerop (call-process "php" nil errbuf nil "-l" tmpfile))
+            (progn
+              (call-process php-cs-fixer-command
+                            nil errbuf nil
+                            "fix"
+                            (if php-cs-config-option
+                                (concat "--config=" (shell-quote-argument php-cs-config-option))
+                              (php-cs-fixer--build-rules-options))
+                            "--using-cache=no"
+                            "--quiet"
+                            tmpfile)
+              (if (zerop (call-process-region (point-min) (point-max) "diff" nil patchbuf nil "-n" "-" tmpfile))
+                  (message "Buffer is already php-cs-fixed")
+                (php-cs-fixer--apply-rcs-patch patchbuf)
+                (message "Applied php-cs-fixer")))
+          (warn (with-current-buffer errbuf (buffer-string)))))
 
-(defvar php-cs-fixer-command-not-found-msg "Package php-cs-fixer loaded but command line php-cs-fixer not found.
-Fix this issue removing the Emacs package php-cs-fixer or installing the program php-cs-fixer")
+      (php-cs-fixer--kill-error-buffer errbuf)
+      (kill-buffer patchbuf)
+      (delete-file tmpfile))))
 
 ;;;###autoload
 (defun php-cs-fixer-before-save ()
@@ -207,17 +226,12 @@ Add this to .emacs to run php-cs-fix on the current buffer when saving:
  (add-hook 'before-save-hook 'php-cs-fixer-before-save)."
 
   (interactive)
-  (if (executable-find "php-cs-fixer")
-      (when (and
-             buffer-file-name
-             (string= (file-name-extension buffer-file-name) "php")
-             (or (not (boundp 'geben-temporary-file-directory))
-                 (not (string-match geben-temporary-file-directory (file-name-directory buffer-file-name))))
-             ) (php-cs-fix))
-    (warn php-cs-fixer-command-not-found-msg)))
-
-(if (not (executable-find "php-cs-fixer"))
-    (warn php-cs-fixer-command-not-found-msg))
+  (when (and
+         buffer-file-name
+         (string= (file-name-extension buffer-file-name) "php")
+         (or (not (boundp 'geben-temporary-file-directory))
+             (not (string-match geben-temporary-file-directory (file-name-directory buffer-file-name))))
+         ) (php-cs-fixer-fix)))
 
 (provide 'php-cs-fixer)
 
