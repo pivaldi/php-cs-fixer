@@ -14,7 +14,10 @@ Install [[https://github.com/FriendsOfPHP/PHP-CS-Fixer][PHP-CS-Fixer]] so that t
 executable in your system.
 
 ** Emacs part
-To install php-cs-fixer.el for Emacs, place `php-cs-fixer.el` in a
+
+This package requires that the `cl-lib` package was installed.
+
+To install `php-cs-fixer.el`, place `php-cs-fixer.el` in a
 directory of your choice, add it to your load path and require
 `'php-cs-fixer` writing this code in your emacs configuration file
 (aka .emacs) :

@@ -18,7 +18,7 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl-lib))
+(require 'cl-lib)
 
 ;;;###autoload
 (defgroup php-cs-fixer nil
