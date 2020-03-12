@@ -112,7 +112,7 @@ ARG is defined as for that function."
              ((equal action "d")
               (with-current-buffer target-buffer
                 (php-cs-fixer--goto-line (- from line-offset))
-                (incf line-offset len)
+                (cl-incf line-offset len)
                 (php-cs-fixer--delete-whole-line len)))
              (t
               (error "Invalid rcs patch or internal error in php-cs-fixer--apply-rcs-patch")))))))))
