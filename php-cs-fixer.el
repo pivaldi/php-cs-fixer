@@ -162,7 +162,7 @@ for the next calls."
       (setq php-cs-fixer-is-command-ok-var 0)
 
       (if (executable-find "php-cs-fixer")
-          (if (string-match ".+ 2.[0-9]+.*"
+          (if (string-match ".+ [2-3].[0-9]+.*"
                             (shell-command-to-string
                              (concat php-cs-fixer-command " --version")))
               (progn (setq php-cs-fixer-is-command-ok-var 1) t)
@@ -217,7 +217,8 @@ for the next calls."
 
       (php-cs-fixer--kill-error-buffer errbuf)
       (kill-buffer patchbuf)
-      (delete-file tmpfile))))
+      (delete-file tmpfile)
+      )))
 
 ;;;###autoload
 (defun php-cs-fixer-before-save ()
