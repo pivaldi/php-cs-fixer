@@ -18,7 +18,7 @@
 
 ;;; Code:
 
-(require 'cl)
+(require 'cl-lib)
 
 ;;;###autoload
 (defgroup php-cs-fixer nil
