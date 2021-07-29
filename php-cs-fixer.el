@@ -7,7 +7,7 @@
 
 ;;; Author: Philippe Ivaldi for OVYA
 ;; Source: Some pieces of code are copied from go-mode.el https://github.com/dominikh/go-mode.el
-;; Version: 1.0Beta1
+;; Version: 1.0
 ;; Keywords: languages php
 ;; Package-Requires: ((cl-lib "0.5"))
 ;; URL: https://github.com/OVYA/php-cs-fixer
