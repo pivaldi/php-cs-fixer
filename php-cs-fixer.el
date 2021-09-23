@@ -161,7 +161,7 @@ for the next calls."
       (message "Testing php-cs-fixer existence and version...")
       (setq php-cs-fixer-is-command-ok-var 0)
 
-      (if (executable-find "php-cs-fixer")
+      (if (executable-find php-cs-fixer-command)
           (if (string-match ".+ [2-3].[0-9]+.*"
                             (shell-command-to-string
                              (concat php-cs-fixer-command " --version")))
