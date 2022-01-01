@@ -72,7 +72,9 @@ These options are not part of `php-cs-fixer-rules-level-part-options`."
   "Delete the current line without putting it in the `kill-ring`.
 Derived from the function `kill-whole-line'.
 ARG is defined as for that function."
-  (let (kill-ring) (kill-whole-line arg)))
+  (delete-region
+    (progn (forward-line 0) (point))
+    (progn (forward-line (or arg 0)) (point))))
 
 ;; Derivated of go--apply-rcs-patch from https://github.com/dominikh/go-mode.el
 (defun php-cs-fixer--apply-rcs-patch (patch-buffer)
