@@ -198,21 +198,20 @@ for the next calls."
         ;; We're using errbuf for the mixed stdout and stderr output. This
         ;; is not an issue because  php-cs-fixer -q does not produce any stdout
         ;; output in case of success.
-        (if (zerop (call-process "php" nil errbuf nil "-l" tmpfile))
-            (progn
-              (call-process php-cs-fixer-command
-                            nil errbuf nil
-                            "fix"
-                            (if php-cs-fixer-config-option
-                                (concat "--config=" (shell-quote-argument php-cs-fixer-config-option))
-                              (php-cs-fixer--build-rules-options))
-                            "--using-cache=no"
-                            "--quiet"
-                            tmpfile)
-              (if (zerop (call-process-region (point-min) (point-max) "diff" nil patchbuf nil "-n" "-" tmpfile))
-                  (message "Buffer is already php-cs-fixed")
-                (php-cs-fixer--apply-rcs-patch patchbuf)
-                (message "Applied php-cs-fixer")))
+        (if (and (zerop (call-process "php" nil errbuf nil "-l" tmpfile))
+                 (zerop (call-process php-cs-fixer-command
+                                      nil errbuf nil
+                                      "fix"
+                                      (if php-cs-fixer-config-option
+                                          (concat "--config=" (shell-quote-argument php-cs-fixer-config-option))
+                                        (php-cs-fixer--build-rules-options))
+                                      "--using-cache=no"
+                                      "--quiet"
+                                      tmpfile)))
+            (if (zerop (call-process-region (point-min) (point-max) "diff" nil patchbuf nil "-n" "-" tmpfile))
+                (message "Buffer is already php-cs-fixed")
+              (php-cs-fixer--apply-rcs-patch patchbuf)
+              (message "Applied php-cs-fixer"))
           (warn (with-current-buffer errbuf (buffer-string)))))
 
       (php-cs-fixer--kill-error-buffer errbuf)
