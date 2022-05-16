@@ -7,7 +7,7 @@
 
 ;;; Author: Philippe Ivaldi for OVYA
 ;; Source: Some pieces of code are copied from go-mode.el https://github.com/dominikh/go-mode.el
-;; Version: 1.0.2
+;; Version: 2.0.0
 ;; Keywords: languages php
 ;; Package-Requires: ((cl-lib "0.5"))
 ;; URL: https://github.com/OVYA/php-cs-fixer
@@ -46,12 +46,41 @@ and `php-cs-rules-fixer-part-options` are not used."
   :type '(repeat
           (choice
            ;; (const :tag "Not set" :value nil)
-           (const :value "@PSR0")
-           (const :value "@PSR1")
-           (const :value "@PSR2")
-           (const :value "@Symfony")
-           (const :value "@Symfony::risky")
+           (const :value "@DoctrineAnnotation")
+           (const :value "@PHP54Migration")
+           (const :value "@PHP56Migration:risky")
+           (const :value "@PHP70Migration")
            (const :value "@PHP70Migration:risky")
+           (const :value "@PHP71Migration")
+           (const :value "@PHP71Migration:risky")
+           (const :value "@PHP73Migration")
+           (const :value "@PHP74Migration")
+           (const :value "@PHP74Migration:risky")
+           (const :value "@PHP80Migration")
+           (const :value "@PHP80Migration:risky")
+           (const :value "@PHP81Migration")
+           (const :value "@PHPUnit30Migration:risky")
+           (const :value "@PHPUnit32Migration:risky")
+           (const :value "@PHPUnit35Migration:risky")
+           (const :value "@PHPUnit43Migration:risky")
+           (const :value "@PHPUnit48Migration:risky")
+           (const :value "@PHPUnit50Migration:risky")
+           (const :value "@PHPUnit52Migration:risky")
+           (const :value "@PHPUnit54Migration:risky")
+           (const :value "@PHPUnit55Migration:risky")
+           (const :value "@PHPUnit56Migration:risky")
+           (const :value "@PHPUnit57Migration:risky")
+           (const :value "@PHPUnit60Migration:risky")
+           (const :value "@PHPUnit75Migration:risky")
+           (const :value "@PHPUnit84Migration:risky")
+           (const :value "@PSR1")
+           (const :value "@PSR12")
+           (const :value "@PSR12:risky")
+           (const :value "@PSR2")
+           (const :value "@PhpCsFixer")
+           (const :value "@PhpCsFixer:risky")
+           (const :value "@Symfony")
+           (const :value "@Symfony:risky")
            ))
   :group 'php-cs-fixer)
 
@@ -73,8 +102,8 @@ These options are not part of `php-cs-fixer-rules-level-part-options`."
 Derived from the function `kill-whole-line'.
 ARG is defined as for that function."
   (delete-region
-    (progn (forward-line 0) (point))
-    (progn (forward-line (or arg 0)) (point))))
+   (progn (forward-line 0) (point))
+   (progn (forward-line (or arg 0)) (point))))
 
 ;; Derivated of go--apply-rcs-patch from https://github.com/dominikh/go-mode.el
 (defun php-cs-fixer--apply-rcs-patch (patch-buffer)
@@ -132,9 +161,8 @@ ARG is defined as for that function."
     (let ((base-opts
            (concat
             (if php-cs-fixer-rules-level-part-options
-                (concat (mapconcat 'identity php-cs-fixer-rules-level-part-options ",") ",")
+                (mapconcat 'identity php-cs-fixer-rules-level-part-options ",")
               nil)
-            "-psr0" ;; Because tmpfile can not support this constraint
             ))
           (other-opts (if php-cs-fixer-rules-fixer-part-options (concat "," (mapconcat 'identity php-cs-fixer-rules-fixer-part-options ",")) nil)))
 
