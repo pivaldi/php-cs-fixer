@@ -1,56 +1,55 @@
-A php-cs-fixer wrapper for the Emacs editor.
+* PHP-CS-FIXER Wrapper for Emacs
 
-* Features
+** Features
 
 Allows in the /Emacs/ editor to fix most issues in /PHP/ code when
-you want to follow the coding standards PSR-1 and PSR-2.
+you want to follow the coding standards //PSR-1/ and //PSR-2/.
 
 Under the hood, this package provides the customisable /Elisp/ command
 /php-cs-fix/ wich wraps the command line /php-cs-fixer/ *version >=2.0*
 provided by the powerful [[http://cs.sensiolabs.org/][PHP Coding Standards Fixer]]
 
-* Installation
-** System part
+** Installation
+*** System part
 
-Install [[https://github.com/FriendsOfPHP/PHP-CS-Fixer][PHP-CS-Fixer]] so that the command line /php-cs-fixer/ is
+Install [[https://github.com/FriendsOfPHP/PHP-CS-Fixer][PHP-CS-Fixer]] so that the command line =php-cs-fixer= is
 executable in your system.
 
-** Emacs part
+*** Emacs part
 
-*** From Melpa
+**** From Melpa
 
-This package can be installed from [[https://melpa.org/#/php-cs-fixer][Melpa]] : /`M-x package-install <RET> php-cs-fixer <RET>`/
+This package can be installed from [[https://melpa.org/#/php-cs-fixer][Melpa]] : =M-x package-install <RET> php-cs-fixer <RET>=
 
-*** Manually
+**** Manually
 
-This package requires that the `cl-lib` package was installed.
+This package requires that the =cl-lib= package was installed.
 
-To install `php-cs-fixer.el`, place `php-cs-fixer.el` in a
+To install =php-cs-fixer.el=, place =php-cs-fixer.el= in a
 directory of your choice, add it to your load path and require
-`'php-cs-fixer` writing this code in your emacs configuration file
-(aka .emacs) :
+='php-cs-fixer= writing this code in your emacs configuration file (aka .emacs) :
 
 #+BEGIN_SRC elisp
     (add-to-list 'load-path "/place/where/you/put/it/")
     (require 'php-cs-fixer)
 #+END_SRC
 
-Either evaluate both statements with /`C-x C-e`/, or restart /Emacs/.
+Either evaluate both statements with =C-x C-e=, or restart /Emacs/.
 
-* Usage
+** Usage
 
-Try /`M-x php-cs-fix [ret]`/ when editing a /PHP/ file.
+Try =M-x php-cs-fix [ret]= when editing a /PHP/ file.
 
-If you want an automatic fix when saving all php files, place this code in your /Emacs/ configuration file the line :
+If you want an automatic fix when saving all php files, place this code in your /Emacs/ configuration file :
 #+BEGIN_SRC elisp
 (add-hook 'before-save-hook 'php-cs-fixer-before-save)
 #+END_SRC
 
-* Customisable variable
+** Customisable variables
 
-- /`php-cs-fixer-command`/ : the 'php-cs-fixer' command (default is "php-cs-fixer") ;
-- /`php-cs-fixer-config-option`/ : the 'php-cs-fixer' --config option value (default is nil, see the file /php-cs-fixer-config.php/ for an example of configuration file) ;
-- /`php-cs-fixer-rules-level-part-options`/ : the 'php-cs-fixer' --rules base part options value (default is '("@Symfony")) ;
-- /`php-cs-fixer-rules-fixer-part-options`/ : the 'php-cs-fixer' --rules exact rules part options value (default is '("no_multiline_whitespace_before_semicolons" "concat_space")) ;
+- =php-cs-fixer-command= : the =php-cs-fixer= command (default is =php-cs-fixer=) ;
+- =php-cs-fixer-config-option= : the =php-cs-fixer --config= option value (default is =nil=, see the file =php-cs-fixer-config.php= for an example of configuration file) ;
+- =php-cs-fixer-rules-level-part-options= : the =php-cs-fixer --rules= base part options value (default is '("@Symfony")) ;
+- =php-cs-fixer-rules-fixer-part-options= : the =php-cs-fixer --rules= exact rules part options value (default is ='("no_multiline_whitespace_before_semicolons" "concat_space")=).
 
-Try /`M-x customize-group [ret] php-cs-fixer [ret]`/ to modify the values of these variables.
+Try =M-x customize-group [ret] php-cs-fixer [ret]= to modify the values of these variables.
