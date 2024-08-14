@@ -47,9 +47,11 @@ If you want an automatic fix when saving all php files, place this code in your 
 
 ** Customisable variables
 
-- =php-cs-fixer-command= : the =php-cs-fixer= command (default is =php-cs-fixer=) ;
-- =php-cs-fixer-config-option= : the =php-cs-fixer --config= option value (default is =nil=, see the file =php-cs-fixer-config.php= for an example of configuration file) ;
-- =php-cs-fixer-rules-level-part-options= : the =php-cs-fixer --rules= base part options value (default is '("@Symfony")) ;
-- =php-cs-fixer-rules-fixer-part-options= : the =php-cs-fixer --rules= exact rules part options value (default is =("no_multiline_whitespace_before_semicolons" "concat_space")=).
+- =php-cs-fixer-command= is the =php-cs-fixer= command (default is =php-cs-fixer=) ;
+- =php-cs-fixer-config-option= is the =php-cs-fixer --config= option value (default is =nil=, see the file
+  =php-cs-fixer-config.php= for an example of configuration file) ;
+- =php-cs-fixer-rules-level-part-options= is the =php-cs-fixer --rules= base part options value (default is '("@Symfony")) ;
+- =php-cs-fixer-rules-fixer-part-options= is the =php-cs-fixer --rules= exact rules part options
+  value (default is =("no_multiline_whitespace_before_semicolons" "concat_space")=).
 
 Try =M-x customize-group [ret] php-cs-fixer [ret]= to modify the values of these variables.
