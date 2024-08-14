@@ -1,9 +1,9 @@
-* PHP-CS-FIXER Wrapper for Emacs
+* PHP-CS-Fixer Wrapper for Emacs
 
 ** Features
 
 Allows in the /Emacs/ editor to fix most issues in /PHP/ code when
-you want to follow the coding standards //PSR-1/ and //PSR-2/.
+you want to follow the coding standards /PSR-1/ and /PSR-2/.
 
 Under the hood, this package provides the customisable /Elisp/ command
 /php-cs-fix/ wich wraps the command line /php-cs-fixer/ *version >=2.0*
@@ -27,7 +27,7 @@ This package requires that the =cl-lib= package was installed.
 
 To install =php-cs-fixer.el=, place =php-cs-fixer.el= in a
 directory of your choice, add it to your load path and require
-='php-cs-fixer= writing this code in your emacs configuration file (aka .emacs) :
+=php-cs-fixer= writing this code in your emacs configuration file (aka .emacs) :
 
 #+BEGIN_SRC elisp
     (add-to-list 'load-path "/place/where/you/put/it/")
@@ -47,9 +47,9 @@ If you want an automatic fix when saving all php files, place this code in your 
 
 ** Customisable variables
 
-- =php-cs-fixer-command= : the =php-cs-fixer= command (default is =php-cs-fixer=) ;
-- =php-cs-fixer-config-option= : the =php-cs-fixer --config= option value (default is =nil=, see the file =php-cs-fixer-config.php= for an example of configuration file) ;
-- =php-cs-fixer-rules-level-part-options= : the =php-cs-fixer --rules= base part options value (default is '("@Symfony")) ;
-- =php-cs-fixer-rules-fixer-part-options= : the =php-cs-fixer --rules= exact rules part options value (default is ='("no_multiline_whitespace_before_semicolons" "concat_space")=).
+- =php-cs-fixer-command= : the =php-cs-fixer= command (default is =php-cs-fixer=) ;
+- =php-cs-fixer-config-option= : the =php-cs-fixer --config= option value (default is =nil=, see the file =php-cs-fixer-config.php= for an example of configuration file) ;
+- =php-cs-fixer-rules-level-part-options= : the =php-cs-fixer --rules= base part options value (default is '("@Symfony")) ;
+- =php-cs-fixer-rules-fixer-part-options= : the =php-cs-fixer --rules= exact rules part options value (default is =("no_multiline_whitespace_before_semicolons" "concat_space")=).
 
 Try =M-x customize-group [ret] php-cs-fixer [ret]= to modify the values of these variables.
