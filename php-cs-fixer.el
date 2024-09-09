@@ -1,4 +1,4 @@
-;;; php-cs-fixer.el --- php-cs-fixer wrapper.
+;;; php-cs-fixer.el --- The php-cs-fixer wrapper
 
 ;;; License:
 ;; Copyright 2015 OVYA (Renée Costes Group). All rights reserved.
@@ -22,7 +22,7 @@
 
 ;;;###autoload
 (defgroup php-cs-fixer nil
-  "php-cs-fixer wrapper."
+  "The php-cs-fixer wrapper group."
   :tag "PHP"
   :prefix "php-cs-fixer-"
   :group 'languages
@@ -30,19 +30,19 @@
   :link '(url-link :tag "Executable dependency" "https://github.com/FriendsOfPHP/PHP-CS-Fixer"))
 
 (defcustom php-cs-fixer-command "php-cs-fixer"
-  "The 'php-cs-fixer' command."
+  "The php-cs-fixer command."
   :type 'string
   :group 'php-cs-fixer)
 
 (defcustom php-cs-fixer-config-option nil
-  "The 'php-cs-fixer' config option.
+  "The php-cs-fixer config option.
 If not nil `php-cs-rules-level-part-options`
 and `php-cs-rules-fixer-part-options` are not used."
   :type 'string
   :group 'php-cs-fixer)
 
 (defcustom php-cs-fixer-rules-level-part-options '("@Symfony")
-  "The 'php-cs-fixer' --rules base part options."
+  "The php-cs-fixer --rules base part options."
   :type '(repeat
           (choice
            ;; (const :tag "Not set" :value nil)
@@ -80,13 +80,12 @@ and `php-cs-rules-fixer-part-options` are not used."
            (const :value "@PhpCsFixer")
            (const :value "@PhpCsFixer:risky")
            (const :value "@Symfony")
-           (const :value "@Symfony:risky")
-           ))
+           (const :value "@Symfony:risky")))
   :group 'php-cs-fixer)
 
 (defcustom php-cs-fixer-rules-fixer-part-options
   '("no_multiline_whitespace_before_semicolons" "concat_space")
-  "The 'php-cs-fixer' --rules part options.
+  "The php-cs-fixer --rules part options.
 These options are not part of `php-cs-fixer-rules-level-part-options`."
   :type '(repeat string)
   :group 'php-cs-fixer)
@@ -162,14 +161,11 @@ ARG is defined as for that function."
            (concat
             (if php-cs-fixer-rules-level-part-options
                 (mapconcat 'identity php-cs-fixer-rules-level-part-options ",")
-              nil)
-            ))
+              nil)))
           (other-opts (if php-cs-fixer-rules-fixer-part-options (concat "," (mapconcat 'identity php-cs-fixer-rules-fixer-part-options ",")) nil)))
-
       (concat
        "--rules=" base-opts
-       (if other-opts other-opts "")))
-    ))
+       (if other-opts other-opts "")))))
 
 (defvar php-cs-fixer-command-not-found-msg "Command php-cs-fixer not found.
 Fix this issue removing the Emacs package php-cs-fixer or installing the program php-cs-fixer")
@@ -199,20 +195,19 @@ for the next calls."
             (progn
               (warn php-cs-fixer-command-bad-version-msg)
               nil))
-        (progn (warn php-cs-fixer-command-not-found-msg) nil)
-        ))))
+        (progn (warn php-cs-fixer-command-not-found-msg) nil)))))
 
 ;;;###autoload
 (defun php-cs-fixer-fix ()
   "Formats the current PHP buffer according to the PHP-CS-Fixer tool."
   (interactive)
-
   (when (php-cs-fixer--is-command-ok)
     (let ((tmpfile (make-temp-file "PHP-CS-Fixer" nil ".php"))
           (patchbuf (get-buffer-create "*PHP-CS-Fixer patch*"))
           (errbuf (get-buffer-create "*PHP-CS-Fixer Errors*"))
           (coding-system-for-read 'utf-8)
-          (coding-system-for-write 'utf-8))
+          (coding-system-for-write 'utf-8)
+          (errorp nil))
 
       (save-restriction
         (widen)
@@ -240,29 +235,28 @@ for the next calls."
                                       tmpfile)))
             (if (zerop (call-process-region (point-min) (point-max) "diff" nil patchbuf nil "-n" "-" tmpfile))
                 (message "Buffer is already php-cs-fixed")
-              (php-cs-fixer--apply-rcs-patch patchbuf)
-              (message "Applied php-cs-fixer"))
-          (warn (with-current-buffer errbuf (buffer-string)))))
-
-      (php-cs-fixer--kill-error-buffer errbuf)
+              (progn
+                (php-cs-fixer--apply-rcs-patch patchbuf)
+                (message "Applied php-cs-fixer")))
+          (progn
+            (pop-to-buffer errbuf nil t)
+            (setq errorp t))))
+      (unless errorp (php-cs-fixer--kill-error-buffer errbuf))
       (kill-buffer patchbuf)
-      (delete-file tmpfile)
-      )))
+      (delete-file tmpfile))))
 
 ;;;###autoload
 (defun php-cs-fixer-before-save ()
   "Used to automatically fix the file saving the buffer.
 Add this to .emacs to run php-cs-fix on the current buffer when saving:
- (add-hook 'before-save-hook 'php-cs-fixer-before-save)."
-
+ (add-hook \\='before-save-hook \\='php-cs-fixer-before-save)."
   (interactive)
   (when (and
          buffer-file-name
          (string= (file-name-extension buffer-file-name) "php")
          (or (not (boundp 'geben-temporary-file-directory))
-             (not (string-match geben-temporary-file-directory (file-name-directory buffer-file-name))))
-         ) (php-cs-fixer-fix)))
+             (not (string-match geben-temporary-file-directory (file-name-directory buffer-file-name)))))
+    (php-cs-fixer-fix)))
 
 (provide 'php-cs-fixer)
-
-;;; php-cs-fixer ends here
+;;; php-cs-fixer.el ends here
