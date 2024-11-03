@@ -1,0 +1,45 @@
+#+title: Todo
+
+- Add support for Apheleia
+  #+begin_src lisp
+  (cl-defun pim--php-cs-fixer-apheleia (&key buffer scratch formatter remote callback remote &allow-other-keys)
+    "Called by `apheleia--run-formatter-function'.
+:buffer buffer
+     Original buffer being formatted. This shouldn't be
+     modified. You can use it to check things like the
+     current major mode, or the buffer filename. If you
+     use it as input for the formatter, your formatter
+     won't work when chained after another formatter.
+:scratch scratch
+     Buffer the formatter should modify. This starts out
+     containing the original file contents, which will be
+     the same as `buffer' except it has already been
+     transformed by any formatters that ran previously.
+     Name of the current formatter symbol, e.g. `black'.
+:formatter
+     The current formatter (a symbol)
+:callback
+     Callback. Should pass an error value (cons of symbol
+     and data, like for `signal') or nil. For backwards
+     compatibility it can also invoke only on success,
+     with no args.
+:remote remote
+     The remote part of the buffers file-name or directory.
+:async (not remote)
+     Whether the formatter should be run async or not.
+:callback
+     Callback when formatting scratch has failed.
+"
+    (when (and (equal formatter 'php-cs-fixer) (not remote))
+      (with-current-buffer buffer
+        (php-cs-fixer-fix)
+        (funcall callback))))
+  (with-eval-after-load 'apheleia
+        (setf (alist-get 'php-cs-fixer apheleia-formatters)
+              'pim--php-cs-fixer-apheleia)
+        (setf (alist-get 'php-mode apheleia-mode-alist) '(php-cs-fixer))
+        )
+  #+end_src
+- Use =replace-buffer-contents=
+  See [[https://github.com/radian-software/apheleia/issues/38]]
+- See https://github.com/purcell/emacs-reformatter
