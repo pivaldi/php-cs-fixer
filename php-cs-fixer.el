@@ -84,7 +84,7 @@ and `php-cs-rules-fixer-part-options` are not used."
   :group 'php-cs-fixer)
 
 (defcustom php-cs-fixer-rules-fixer-part-options
-  '("no_multiline_whitespace_before_semicolons" "concat_space")
+  '("multiline_whitespace_before_semicolons" "concat_space")
   "The php-cs-fixer --rules part options.
 These options are not part of `php-cs-fixer-rules-level-part-options`."
   :type '(repeat string)
