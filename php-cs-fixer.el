@@ -202,7 +202,7 @@ for the next calls."
   "Formats the current PHP buffer according to the PHP-CS-Fixer tool."
   (interactive)
   (when (php-cs-fixer--is-command-ok)
-    (let ((tmpfile (make-temp-file "PHP-CS-Fixer" nil ".php"))
+    (let ((tmpfile (make-temp-file (concat (file-name-sans-extension (file-name-nondirectory (buffer-file-name))) "-PHP-CS-Fixer-") nil ".php"))
           (patchbuf (get-buffer-create "*PHP-CS-Fixer patch*"))
           (errbuf (get-buffer-create "*PHP-CS-Fixer Errors*"))
           (coding-system-for-read 'utf-8)
