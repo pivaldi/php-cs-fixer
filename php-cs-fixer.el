@@ -90,6 +90,12 @@ These options are not part of `php-cs-fixer-rules-level-part-options`."
   :type '(repeat string)
   :group 'php-cs-fixer)
 
+(defcustom php-cs-fixer-fix-popup-on-error nil
+  "Should `php-cs-fixer-fix` popup an error buffer on error ?"
+  :type 'boolean
+  :group 'php-cs-fixer)
+
+
 ;; Copy of go--goto-line from https://github.com/dominikh/go-mode.el
 (defun php-cs-fixer--goto-line (line)
   "Private goto line to LINE."
@@ -202,19 +208,24 @@ for the next calls."
   "Formats the current PHP buffer according to the PHP-CS-Fixer tool."
   (interactive)
   (when (php-cs-fixer--is-command-ok)
-    (let ((tmpfile (make-temp-file (concat (file-name-sans-extension (file-name-nondirectory (buffer-file-name))) "-PHP-CS-Fixer-") nil ".php"))
-          (patchbuf (get-buffer-create "*PHP-CS-Fixer patch*"))
-          (errbuf (get-buffer-create "*PHP-CS-Fixer Errors*"))
-          (coding-system-for-read 'utf-8)
-          (coding-system-for-write 'utf-8)
-          (errorp nil))
-
+    (let* ((tmpfile (make-temp-file "PHP-CS-Fixer-" nil ".php"))
+           (filename (buffer-file-name))
+           (date (format-time-string "%Y-%m-%d %H:%M:%S %Z" (current-time)))
+           (patchbuf (get-buffer-create "*PHP-CS-Fixer patch*"))
+           (errbuf (get-buffer-create
+                    (format
+                     "*PHP-CS-Fixer Errors %s*"
+                     (substring (md5 (format "%s%d" date (random))) 0 10))))
+           (coding-system-for-read 'utf-8)
+           (coding-system-for-write 'utf-8)
+           (errorp nil))
       (save-restriction
         (widen)
         (if errbuf
             (with-current-buffer errbuf
               (setq buffer-read-only nil)
-              (erase-buffer)))
+              (erase-buffer)
+              (insert (format "%s - An error occurs fixing the file `%s`\n\n" date filename))))
         (with-current-buffer patchbuf
           (erase-buffer))
 
@@ -239,8 +250,21 @@ for the next calls."
                 (php-cs-fixer--apply-rcs-patch patchbuf)
                 (message "Applied php-cs-fixer")))
           (progn
-            (pop-to-buffer errbuf nil t)
-            (setq errorp t))))
+            (if php-cs-fixer-fix-popup-on-error
+                (let ((window (display-buffer errbuf '(nil (allow-no-window . t)))))
+                  (setq errorp t)
+                  (set-window-point window 1)
+                  (set-window-dedicated-p window t)
+                  (and (window-full-width-p window)
+                       (not (eq window (frame-root-window (window-frame window))))
+                       (save-excursion
+                         (save-selected-window
+                           (select-window window)
+                           (enlarge-window (- (* 2 window-min-height) (window-height))))))
+                  )
+              (warn (with-current-buffer errbuf (buffer-string)))
+              )
+            )))
       (unless errorp (php-cs-fixer--kill-error-buffer errbuf))
       (kill-buffer patchbuf)
       (delete-file tmpfile))))

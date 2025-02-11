@@ -50,8 +50,11 @@ If you want an automatic fix when saving all php files, place this code in your 
 - =php-cs-fixer-command= is the =php-cs-fixer= command (default is =php-cs-fixer=) ;
 - =php-cs-fixer-config-option= is the =php-cs-fixer --config= option value (default is =nil=, see the file
   =php-cs-fixer-config.php= for an example of configuration file) ;
-- =php-cs-fixer-rules-level-part-options= is the =php-cs-fixer --rules= base part options value (default is '("@Symfony")) ;
+- =php-cs-fixer-rules-level-part-options= is the =php-cs-fixer --rules= base part options value (default is ='("@Symfony")=) ;
 - =php-cs-fixer-rules-fixer-part-options= is the =php-cs-fixer --rules= exact rules part options
   value (default is =("no_multiline_whitespace_before_semicolons" "concat_space")=).
+- =php-cs-fixer-fix-popup-on-error= : should fixing a file popups an error buffer when it failed ?\\
+  Warning : when =nil= (the default), error fixing a file will calls the Emacs
+  function =warn= that can be inhibited by =warning-suppress-types=.
 
 Try =M-x customize-group [ret] php-cs-fixer [ret]= to modify the values of these variables.
