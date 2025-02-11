@@ -1,4 +1,4 @@
-;;; php-cs-fixer.el --- The php-cs-fixer wrapper
+;;; php-cs-fixer.el --- The php-cs-fixer wrapper -*- lexical-binding: t; -*-
 
 ;;; License:
 ;; Copyright 2015 OVYA (Renée Costes Group). All rights reserved.
@@ -7,10 +7,10 @@
 
 ;;; Author: Philippe Ivaldi for OVYA
 ;; Source: Some pieces of code are copied from go-mode.el https://github.com/dominikh/go-mode.el
-;; Version: 2.0.0
+;; Version: 2.1.0
 ;; Keywords: languages php
-;; Package-Requires: ((cl-lib "0.5"))
-;; URL: https://github.com/OVYA/php-cs-fixer
+;; Package-Requires: ((emacs "24.3"))
+;; URL: https://github.com/pivaldi/php-cs-fixer
 ;;
 ;;; Commentary:
 ;; This file is not part of GNU Emacs.
@@ -215,7 +215,7 @@ for the next calls."
            (errbuf (get-buffer-create
                     (format
                      "*PHP-CS-Fixer Errors %s*"
-                     (substring (md5 (format "%s%d" date (random))) 0 10))))
+                     (substring (md5 filename) 0 10))))
            (coding-system-for-read 'utf-8)
            (coding-system-for-write 'utf-8)
            (errorp nil))
@@ -260,14 +260,14 @@ for the next calls."
                        (save-excursion
                          (save-selected-window
                            (select-window window)
-                           (enlarge-window (- (* 2 window-min-height) (window-height))))))
-                  )
-              (warn (with-current-buffer errbuf (buffer-string)))
-              )
-            )))
+                           (enlarge-window (- (* 2 window-min-height) (window-height)))))))
+              (warn (with-current-buffer errbuf (buffer-string)))))))
       (unless errorp (php-cs-fixer--kill-error-buffer errbuf))
       (kill-buffer patchbuf)
       (delete-file tmpfile))))
+
+;; Prevents warning reference to free variable.
+(defvar geben-temporary-file-directory)
 
 ;;;###autoload
 (defun php-cs-fixer-before-save ()
