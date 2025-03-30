@@ -58,3 +58,7 @@ If you want an automatic fix when saving all php files, place this code in your 
   function =warn= that can be inhibited by =warning-suppress-types=.
 
 Try =M-x customize-group [ret] php-cs-fixer [ret]= to modify the values of these variables.
+
+**  If you appreciate this project
+
+[[https://buymeacoffee.com/pivaldi][☕ Buy Me a Coffee]]
